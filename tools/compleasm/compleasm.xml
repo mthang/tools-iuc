@@ -1,11 +1,15 @@
-<tool id="compleasm" name="compleasm" version="@TOOL_VERSION@+galaxy0" profile="20.01">
+<tool id="compleasm" name="compleasm" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="20.01">
     <description>completeness of genome assemblies</description>
     <macros>
         <import>macros.xml</import>
     </macros>
+    <xrefs>
+        <xref type="bio.tools">compleasm</xref>
+    </xrefs>
     <requirements>
         <requirement type="package" version="@TOOL_VERSION@">compleasm</requirement>
     </requirements>
+    <version_command>compleasm --version</version_command>
     <command><![CDATA[
     
     mkdir -p galaxy_db &&
@@ -17,6 +21,7 @@
     --mode $mode
     -L 'galaxy_db'
     -l '$lineage_dataset'
+    -t "\${GALAXY_SLOTS:-1}" 
 
     #if str($specified_contigs) != '':
         --specified_contigs '$specified_contigs'
