@@ -1,0 +1,15 @@
+<macros>
+    <!-- UPDATING: pull the latest container and check the version. Update both tokens. You MUST
+    also update the model list. See README.md for more.  -->
+    <token name="@VERSION@">1.1.8</token>
+    <xml name="requirements">
+        <requirements>
+            <container type="docker">larsgabriel23/tiberius:@VERSION@</container>
+        </requirements>
+    </xml>
+    <xml name="xrefs">
+        <xrefs>
+            <xref type="bio.tools">tiberius</xref>
+        </xrefs>
+    </xml>
+</macros>

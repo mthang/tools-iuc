@@ -1,0 +1,17 @@
+<tool id="dorado" name="Dorado" version="@VERSION@+galaxy1" python_template_version="3.5" profile="24.1">
+    <description>basecaller for raw Oxford Nanopore data</description>
+    <macros>
+        <import>macros.xml</import>
+    </macros>
+    <expand macro="xrefs"/>
+    <expand macro="requirements"/>
+    <command detect_errors="exit_code"><![CDATA[
+    ]]></command>
+    <inputs>
+        <param name="pod5_file" type="data" format="pod5" label="Raw pod5 file" help="Only pod5 is supported. You can convert fast5 to pod5 with the fast5 to pod5 tool."/>
+    </inputs>
+    <outputs>
+        <data format="unsorted.bam" name="out_bam" label="Reads from ${on_string} basecalled by ${tool.name} with model ${model.fields.name}" from_work_dir="calls.bam"/>
+        <data format="tsv" name="out_tsv" label="${tool.name} sequencing summary for ${on_string}" from_work_dir="summary.tsv"/>
+    </outputs>
+</tool>
