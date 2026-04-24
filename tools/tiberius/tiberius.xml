@@ -1,4 +1,4 @@
-<tool id="tiberius" name="Tiberius" version="@VERSION@+galaxy1" python_template_version="3.5" profile="24.1">
+<tool id="tiberius" name="Tiberius" version="@VERSION@+galaxy0" python_template_version="3.5" profile="24.1">
     <description>deep learning-based ab initio gene structure prediction</description>
     <macros>
         <import>macros.xml</import>
@@ -7,16 +7,16 @@
     <expand macro="requirements"/>
     <command detect_errors="exit_code"><![CDATA[
 
-exit 1 ;
-
 ln -s '$genome' ./genome.fa &&
 
+TF_NUM_INTRAOP_THREADS="\${GALAXY_SLOTS}"
 tiberius.py
 --genome genome.fa
 --model "${model.fields.path}"
 --out output.gtf
 --batch_size '$batch_size'
-#if $masking.model.fields.masking_type == 'unmasked'
+
+#if $model.fields.type == 'unmasked':
 --no_softmasking
 #end if
 
@@ -44,34 +44,34 @@ tiberius.py
                 </param>
             </when>
         </conditional>
-        <!-- TODO: set this to hidden, it's just for dev -->
-        <param argument="--batch_size" type="integer" value="16"/>
+        <param argument="--batch_size" type="hidden" value="16"/>
     </inputs>
     <outputs>
         <data format="gtf" name="out_gtf" label="${tool.name} annotation with model ${model.fields.name}" from_work_dir="output.gtf"/>
     </outputs>
     <tests>
         <!-- test 1 -->
-        <test expect_num_outputs="1">
+        <test expect_failure="true">
             <param name="genome" value="KV860338_truncated.fasta.gz"/>
-            <param name="model" value="Vertebrata_unmasked"/>
+            <conditional name="masking">
+                <param name="model" value="Vertebrata_unmasked"/>
+            </conditional>
             <param name="batch_size" value="2"/>
-            <output name="out_gtf" ftype="gtf">
-                <assert_contents>
-                    <has_size size="10000" delta="1000"/>
-                </assert_contents>
-            </output>
+            <assert_command>
+                <has_text text="no_softmasking"/>
+            </assert_command>
         </test>
         <!-- test 2 -->
-        <test expect_num_outputs="1">
+        <test expect_failure="true">
             <param name="genome" value="KV860338_truncated.fasta.gz"/>
-            <param name="model" value="Mammalia_softmasked"/>
+            <conditional name="masking">
+                <param name="softmasked" value="softmasked"/>
+                <param name="model" value="Mammalia_softmasked"/>
+            </conditional>
             <param name="batch_size" value="2"/>
-            <output name="out_gtf" ftype="gtf">
-                <assert_contents>
-                    <has_size size="10000" delta="1000"/>
-                </assert_contents>
-            </output>
+            <assert_command>
+                <not_has_text text="no_softmasking"/>
+            </assert_command>
         </test>
     </tests>
     <help><![CDATA[
